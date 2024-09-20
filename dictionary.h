@@ -13,6 +13,6 @@ typedef struct Node
   long next; 
 }NODE;
 
-void initializeDataDictionary();
+void initializeDataDictionary(const char dictonaryName);
 
 #endif
