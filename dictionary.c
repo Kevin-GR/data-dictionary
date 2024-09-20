@@ -18,6 +18,8 @@ void initializeDataDictionary(const char *dictionaryName) {
         printf("enter a value for node #%d", counter);
         scanf("%s[^ \n]", currentNode.value);
         fgets(&(currentNode.value),sizeof(currentNode.value), dictionary);    
+
+        fwrite(currentNode, sizeof(currentNode), 1, *dictionaryName)
     }
     return EXIT_SUCCESS;
 }
