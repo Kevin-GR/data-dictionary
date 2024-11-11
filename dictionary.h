@@ -1,18 +1,22 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
- #define   EMPTY_POINTER -1
+#define EMPTY_POINTER -1
+#define DATA_BLOCK_NAME 50
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.g>
 
 typedef struct Node
 {
-  char value [50];
-  struct Node *next;
-  // in memory pointer
-  // file pointer
-  long next; 
-}NODE;
+  char nombre[DATA_BLOCK_NAME];
+  long dataPointer; 
+  long atributos;
+  long SigEntidad;
+}ENTITY;
 
-void initializeDataDictionary(const char dictonaryName);
+FILE *initializeDataDictionary(const char dictonaryName);
+int creaEntidad(FIle *DiccionarioDatos, ENTITY NuevaEntidad);
+
 
 #endif

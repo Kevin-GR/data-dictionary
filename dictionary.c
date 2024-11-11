@@ -1,17 +1,18 @@
 #include "dictionary.h"
 
-void initializeDataDictionary(const char *dictionaryName) {
+FILE initializeDataDictionary(const char *dictionaryName) {
     long mainHeader = EMPTY_POINTER;
     int stringsToSave =0;
     printf("Initializing Data Dictionary...\n");
-
     FILE *dictionary = fopen (dictionaryName, "W+");
-    fwrite (&mainHeader, sizeof(mainHeader)1, dictionary);
+
+    fwrite (&mainHeader, sizeof(mainHeader),1, dictionary);
+    /*
     printf("cuantas cadenas quieres guardar");
     scanf("%d", &stringsToSave);
-    fflush(stdin);
+    fflush(stdin);*/
     
-    for(int counter=0; counter< stringsToSave; counter++)
+   /*for(int counter=0; counter< stringsToSave; counter++)
     {
         NODE currentNode;
         currentNode.next =EMPTY_POINTER;
@@ -20,6 +21,13 @@ void initializeDataDictionary(const char *dictionaryName) {
         fgets(&(currentNode.value),sizeof(currentNode.value), dictionary);    
 
         fwrite(currentNode, sizeof(currentNode), 1, *dictionaryName)
-    }
-    return EXIT_SUCCESS;
+    }*/
+    return dictionary;
+}
+
+int creaEntidad(FIle *DiccionarioDatos, ENTITY NuevaEntidad)
+{
+    fseek(DiccionarioDatos,0, SEEK_END);
+    fwrite(&NuevaEntidad,sizeof(ENTITY),1, NuevaEntidad);
+    return EXIT_FAILURE;
 }
