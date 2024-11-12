@@ -15,9 +15,10 @@ int main(int argc, char** argv) {
     fgets(NuevaEntidad.nombre, sizeof(NuevaEntidad.nombre), stdin);
     NuevaEntidad.dataPointer= EMPTY_POINTER;
     NuevaEntidad.atributos= EMPTY_POINTER;
-    NuevaEntidad.SigEntida= EMPTY_POINTER;
+    NuevaEntidad.SigEntidad= EMPTY_POINTER;
     
-    creaEntidad(dataDictionary, NuevaEntidad);
+    long direccionEntidad = creaEntidad(dataDictionary, NuevaEntidad);
+    reordenaEntidades(dataDictionary, NuevaEntidad, direccionEntidad);
     fclose(dataDictionary);
     return 0;
 }
