@@ -6,17 +6,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef struct Node
 {
-  char nombre[DATA_BLOCK_SIZE];
+  char name[DATA_BLOCK_SIZE];
   long dataPointer; 
-  long atributos;
-  long SigEntidad;
+  long attributesPointer;
+  long nextEntity;
 }ENTITY;
 
+typedef struct attribute
+{
+  char name[DATA_BLOCK_SIZE];
+  bool isPrimary;current
+  int type;
+  long size;
+  long nextAtribute;
+}ATTRIBUTE;
+
+
 FILE *initializeDataDictionary(const char *dictonaryName);
-int creaEntidad(FILE *DiccionarioDatos, ENTITY NuevaEntidad);
-void reordenaEntidades(FILE *diccionarioDatos,ENTITY NuevaEntidad, long NuevaDirEntidad);
+int appendEntity(FILE *dataDictionary, ENTITY NuevaEntidad);
+
+void removeEntity(FILE *dataDictionary, long currentEntityPointer, const char *newEntityName);
+void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char *newEntityName, long newEntity);
+
+void reorderAtributees(FILE *dataDictionary, long currentEntityPointer, const char *neweEntityName, long newEntity);
+
 
 #endif
