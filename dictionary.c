@@ -8,33 +8,30 @@ FILE *initializeDataDictionary(const char *dictionaryName) {
     return dictionary;
 }
 
-int appendEntity(FILE *DiccionarioDatos, ENTITY newEntity)
+int appendEntity(FILE *dataDictionary, ENTITY newEntity)
 {
-    fseek(DiccionarioDatos,0, SEEK_END);
-    long DireccionEntidad = ftell(DiccionarioDatos); //direccion de la nueva entidad
+    fseek(dataDictionary,0, SEEK_END);
+    long entityDirection = ftell(dataDictionary); 
 
-    fwrite(&newEntity.name,DATA_BLOCK_SIZE,1, DiccionarioDatos);
-    fwrite(&newEntity.dataPointer,sizeof(long),1, DiccionarioDatos);
-    fwrite(&newEntity.attributesPointer,sizeof(long),1, DiccionarioDatos);
-    fwrite(&newEntity.nextEntity,sizeof(long),1, DiccionarioDatos);
+    fwrite(newEntity.name,DATA_BLOCK_SIZE,1, dataDictionary);
+    fwrite(&newEntity.dataPointer,sizeof(long),1, dataDictionary);
+    fwrite(&newEntity.attributesPointer,sizeof(long),1, dataDictionary);
+    fwrite(&newEntity.nextEntity,sizeof(long),1, dataDictionary);
 
-    return DireccionEntidad;
+    return entityDirection;
 }
 
 void createEntity(FILE *dataDictionary)
 {
     ENTITY newEntity;
-
+    printf("Enter the Entity name");
     fgets(newEntity.name, sizeof(newEntity.name),stdin);
-
-
-    /*newEntity.name = "";
     newEntity.dataPointer =EMPTY_POINTER;
     newEntity.attributesPointer =EMPTY_POINTER;
     newEntity.nextEntity =EMPTY_POINTER;
 
     long attributeDirection= appendEntity(dataDictionary, newAttribute);
-    reorderEntities(dataDictionary,current);*/
+    reorderEntities(dataDictionary,current);
 
 }
 
@@ -42,7 +39,7 @@ void createAtribute(FILE *dataDictionary)
 {
     ATTRIBUTE newAttribute;
 
-   // printf("enter the attribute name");
+    printf("enter the attribute name");
     fgets(newAttribute.name, sizeof(newAttribute.name),stdin);
 
     //printf("is primary");
@@ -78,6 +75,18 @@ void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char
         fseek(dataDictionary, currentEntityPointer,SEEK_SET);
         fread(&currentEntityName,sizeof(char),DATA_BLOCK_SIZE,dataDictionary);
         nextHeaderPointer = ftell(dataDictionary);
+
+        if(strcmp(currentEntityName, neweEntityName)<0)
+        {
+            reorderEntities(dataDictionary, nextHeaderPointer, neweEntityName, newEntityDirection);
+        }
+        else
+        {
+            fseek(dataDictionary, currentEntityPointer,SEEK_SET);
+            fwrite(&newEntityDirection, sizeof(long),1, dataDictionary);
+            fseek(data, newEntityDirection+DATA_BLOCK_SIZE+sizeof(long)*2, SEEK_SET);
+            fwrite(&currentEntityDirection, sizeof(long),1, dataDictionary);
+        }
     }
    
 }
@@ -151,13 +160,13 @@ void reorderAtributes(FILE *dataDictionary, long currentEntityPointer, const cha
 int appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute)
 {
     fseek(dataDictionary,0, SEEK_END);
-    long DireccionEntidad = ftell(dataDictionary); //direccion de la nueva entidad
+    long entityDirection = ftell(dataDictionary); //direccion de la nueva entidad
 
     fwrite(newAttribute.name, DATA_BLOCK_SIZE,1, dataDictionary);
     fwrite(&newAttribute.isPrimary,sizeof(long),1, dataDictionary);
-    //fwrite(&newAttribute.tif(strcmp(currentEntityName,ent))ype,sizeof(long),1, dataDictionary);
+    fwrite(&newAttribute.type,sizeof(long), 1, dataDictionary);
     fwrite(&newAttribute.size,sizeof(long),1, dataDictionary);
     fwrite(&newAttribute.nextAtribute,sizeof(long),1, dataDictionary);
 
-    return DireccionEntidad;
+    return entityDirection;
 }
