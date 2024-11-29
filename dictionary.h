@@ -34,5 +34,6 @@ ENTITY removeEntity(FILE *dataDictionary, long currentEntityPointer, const char 
 void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char *newEntityName, long newEntity);
 int appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute);
 void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection);
+void openDataDictionary();
 #endif
 

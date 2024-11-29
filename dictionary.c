@@ -257,6 +257,41 @@ void  printDataRecords(FILE *dataDictionary, long attributesPointer,long current
        
              printf("1.- New Entity\n 2.- Delete entity\n 3.- Print entities \n 4.- Menu attributes  5.- finish");
              scanf("%d", &option);
+            getchar();
+            switch (option)
+            {
+            case 1:
+                createEntity(dataDictionary);
+                break;
+            case 2:
+                removeEntity(dataDictionary,);
+                break;
+            case 3:
+                createEntity(dataDictionary);
+                break;
+            case 4:
+                createEntity(dataDictionary);
+                break;
+            case 5:
+                createEntity(dataDictionary);
+                break;
+            
+            default:
+                break;
+            }
+
+        }while (option != 5);
+ }
+
+ void Attributes_menu(FILE *dataDictionary)
+ {
+    int option;
+        do
+        {
+             printf("-----Entities menu-----\n");
+       
+             printf(" 1.- New Entity\n 2.- Delete entity\n 3.- Print entities \n 4.- Menu attributes\n  5.- finish\n");
+             scanf("%d", &option);
 
             switch (option)
             {
@@ -283,37 +318,37 @@ void  printDataRecords(FILE *dataDictionary, long attributesPointer,long current
         }while (option != 5);
  }
 
- void Attributes_menu(FILE *dataDictionary)
+ void  main_menu()
  {
     int option;
-        do
-        {
-             printf("-----Entities menu-----\n");
-       
-             printf("1.- New Entity\n 2.- Delete entity\n 3.- Print entities \n 4.- Menu attributes  5.- finish");
-             scanf("%d", &option);
+   
 
+              do
+        {
+             printf("-----Main menu-----\n");
+             printf(" 1.- New data dictionary \n 2.- open data dictionary \n 3.- finish\n");
+             scanf("%d", &option);
+            getchar();
             switch (option)
             {
             case 1:
-                createEntity(dataDictionary);
+                openDataDictionary();
                 break;
             case 2:
-                createEntity(dataDictionary);
+                openDataDictionary();
                 break;
-            case 3:
-                createEntity(dataDictionary);
-                break;
-            case 4:
-                createEntity(dataDictionary);
-                break;
-            case 5:
-                createEntity(dataDictionary);
-                break;
-            
             default:
                 break;
             }
 
-        }while (option != 5);
+        }while (option != 3);
+ }
+
+ void openDataDictionary()
+ {
+    char name[50];
+    printf("Enter a data Dictionary name:");
+    fgets(name, sizeof(name),stdin);
+    FILE *dataDictionary = initializeDataDictionary(name);
+    Attributes_menu(dataDictionary);
  }

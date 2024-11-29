@@ -1,13 +1,9 @@
 #include "main.h"
 
 int main(int argc, char** argv) {
-    char name[50];
-    printf("Enter a data Dictionary name:");
-
-    fgets(name, sizeof(name),stdin);
-
-    FILE *dataDictionary = initializeDataDictionary(name);
-    Entities_menu(dataDictionary);
+    
+    main_menu();
+    //Entities_menu(dataDictionary);
     /*createEntity(dataDictionary);
 
     ENTITY currentEntity ;
