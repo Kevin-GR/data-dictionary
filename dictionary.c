@@ -38,8 +38,36 @@ void createEntity(FILE *dataDictionary)
 void createAtribute(FILE *dataDictionary, ENTITY currentEntity)
 {
     ATTRIBUTE newAttribute;
+    int length;
+
     printf("Enter the attribute name:\n");
     fgets(newAttribute.name, sizeof(newAttribute.name), stdin);
+    printf("Is primary key? 1:Yes, 0:No");
+    scanf("%d" , &newAttribute.isPrimary);
+
+    printf("Atribute type?:\n 1- Int\n 2- Float\n 3- Char\n 4.- Long\n 5-Bool\n");
+    scanf("%d" , &newAttribute.type);
+
+    switch (newAttribute.type)
+    {
+    case 1:
+            newAttribute.size = sizeof(int);
+            break;
+    case 2:
+            newAttribute.size = sizeof(float);
+            break;
+    case 3:
+            printf("string length?");
+            scanf("%d", & length);
+            newAttribute.size  = sizeof(char)* length;
+            break;
+    case 4:
+            newAttribute.size  = sizeof(long);
+            break;
+    case 5:
+            newAttribute.size  = sizeof(bool);
+            break;
+    }
     newAttribute.isPrimary = false;
     newAttribute.type =1;
     newAttribute.size = sizeof(int);
