@@ -3,7 +3,7 @@
 FILE *initializeDataDictionary(const char *dictionaryName) {
     long mainHeader = EMPTY_POINTER;
     printf("Initializing Data Dictionary...\n");
-    FILE *dictionary = fopen (dictionaryName, "Wb+");
+    FILE *dictionary = fopen (dictionaryName, "W+");
     fwrite (&mainHeader, sizeof(mainHeader),1, dictionary);
     return dictionary;
 }
@@ -24,39 +24,36 @@ int appendEntity(FILE *dataDictionary, ENTITY newEntity)
 void createEntity(FILE *dataDictionary)
 {
     ENTITY newEntity;
-    printf("Enter the Entity name");
-    fgets(newEntity.name, sizeof(newEntity.name),stdin);
-    newEntity.dataPointer =EMPTY_POINTER;
-    newEntity.attributesPointer =EMPTY_POINTER;
-    newEntity.nextEntity =EMPTY_POINTER;
 
-    long attributeDirection= appendEntity(dataDictionary, newAttribute);
-    reorderEntities(dataDictionary,current);
+    printf("Enter the entity name");
+    fgets(newEntity.name, sizeof(newEntity.name), stdin);
+    newEntity.dataPointer= EMPTY_POINTER;
+    newEntity.attributesPointer= EMPTY_POINTER;
+    newEntity.nextEntity= EMPTY_POINTER;
 
+    long entityDirection = appendEntity(dataDictionary, newEntity);
+    reorderEntities(dataDictionary, MAIN_ENTITY_POINTER, newEntity.name, entityDirection);
 }
 
-void createAtribute(FILE *dataDictionary)
+void createAtribute(FILE *dataDictionary, ENTITY currentEntity)
 {
     ATTRIBUTE newAttribute;
+    printf("Enter the attribute name");
+    fgets(newAttribute.name, sizeof(newAttribute.name), stdin);
+    newAttribute.isPrimary = false;
+    newAttribute.type =1;
+    newAttribute.size = sizeof(int);
 
-    printf("enter the attribute name");
-    fgets(newAttribute.name, sizeof(newAttribute.name),stdin);
-
-    //printf("is primary");
-    newAttribute.isPrimary =false;
-
-    newAttribute.type =EMPTY_POINTER;
-    newAttribute.size =EMPTY_POINTER;
     newAttribute.nextAtribute =EMPTY_POINTER;
 
-    long attributeDirection= appendEntity(dataDictionary, newAttribute);
-    //reorderEntities(dataDictionary,current);
-
+    long attributeDirection = appendAttribute(dataDictionary, newAttribute);
+    reorderAtributes(dataDictionary, currentEntity.attributesPointer, newAttribute.name, attributeDirection);
 }
+
 
 void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char *neweEntityName, long newEntityDirection)
 {
-    long currentEntityDIrection =-1;
+    long currentEntityDirection =-1;
     
     fseek(dataDictionary,currentEntityPointer,SEEK_SET);
     fread(&currentEntityPointer, sizeof(long),1,dataDictionary);
@@ -84,27 +81,28 @@ void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char
         {
             fseek(dataDictionary, currentEntityPointer,SEEK_SET);
             fwrite(&newEntityDirection, sizeof(long),1, dataDictionary);
-            fseek(data, newEntityDirection+DATA_BLOCK_SIZE+sizeof(long)*2, SEEK_SET);
+            fseek(dataDictionary, newEntityDirection+DATA_BLOCK_SIZE+sizeof(long)*2, SEEK_SET);
             fwrite(&currentEntityDirection, sizeof(long),1, dataDictionary);
         }
     }
    
 }
 
+
 ENTITY removeEntity(FILE *dataDictionary, long currentEntityPointer, const char *EntityName)
 {
-    long currentEntityDirection =-1;
+    /*long currentEntityDirection =-1;
     
     fseek(dataDictionary,currentEntityPointer,SEEK_SET);
     fread(&currentEntityPointer, sizeof(currentEntityDirection),1,dataDictionary);
 
     if(currentEntityPointer == -1)
     {
-        return ;
+        return 0;
     }
     else
     {
-        ENTITY resultEntity;
+        char currentEntityName[DATA_BLOCK_SIZE];
         long nextEntityDirection;
         long nextHeaderPointer;
 
@@ -122,37 +120,51 @@ ENTITY removeEntity(FILE *dataDictionary, long currentEntityPointer, const char 
         }
         else
         {
-            removeEntity(dataDictionary, nextHeaderPointer, EntityName);
+            fseek(dataDictionary,currentEntityPointer,SEEK_SET);
+            fwrite(&newEntityDirection, sizeof(long),1,dataDictionary);
+            fseek(dataDictionary,newEntityDirection+DATA_BLOCK_SIZE+(sizeof(long)*2),SEEK_SET);
+            fwrite(&currentEntityDirection, sizeof(long),DATA_BLOCK_SIZE,dataDictionary);
+            
         }
         
     }
-   
+   */
 }
 
-void reorderAtributes(FILE *dataDictionary, long currentEntityPointer, const char *neweEntityName, long newEntityDirection)
+void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection)
 {
-    long currentEntityDIrection =-1;
+    long currentAttributeDirection =-1;
     
    
-    fseek(dataDictionary,currentEntityPointer,SEEK_SET);
-    fread(&currentEntityPointer, sizeof(long),1,dataDictionary);
+    fseek(dataDictionary,currentAttributeDirection,SEEK_SET);
+    fread(&currentAttributePointer, sizeof(long),1,dataDictionary);
 
-    if(currentEntityPointer == -1)
+    if(currentAttributePointer == -1)
     {
-        fseek(dataDictionary, currentEntityPointer,SEEK_SET);
-        fwrite(&newEntityDirection,sizeof(long),1,dataDictionary);
+        fseek(dataDictionary, currentAttributePointer,SEEK_SET);
+        fwrite(&newAttributeName,sizeof(long),1,dataDictionary);
     }
     else
     {
-        char currentEntityName[DATA_BLOCK_SIZE];
+        char currentAttributeName[DATA_BLOCK_SIZE];
         long nextAtributeDirection;
         long nextHeaderPointer;
 
-        fseek(dataDictionary, currentEntityPointer,SEEK_SET);
-        fread(&currentEntityName,sizeof(char),DATA_BLOCK_SIZE,dataDictionary);
-        nextHeaderPointer = ftell(dataDictionary);
+        fseek(dataDictionary, currentAttributePointer,SEEK_SET);
+        fread(&currentAttributeName,sizeof(char),DATA_BLOCK_SIZE,dataDictionary);
+        nextHeaderPointer = ftell(dataDictionary)+ sizeof(bool)+ (sizeof(long)*2);
 
-        
+        if(strcmp(currentAttributeName, newAttributeName)<0)
+        {
+            reorderAtributes(dataDictionary, nextHeaderPointer,newAttributeName,newAttributeDirection);
+        }
+        else
+        {
+            fseek(dataDictionary, currentAttributePointer,SEEK_SET);
+            fwrite(&newAttributeDirection,sizeof(long),1, dataDictionary);
+            fseek(dataDictionary, newAttributeDirection+DATA_BLOCK_SIZE+(sizeof(long)*2),SEEK_SET);
+            fwrite(&currentAttributeDirection, sizeof(long),1,dataDictionary);
+        }
     }
    
 }
@@ -170,3 +182,66 @@ int appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute)
 
     return entityDirection;
 }
+
+void printEntityData(FILE *dataDictionary, long currentEntityPointer)
+{
+    long currentEntityDirection =-1;
+    fseek(dataDictionary, currentEntityPointer, SEEK_SET);
+    fread(&currentEntityDirection, sizeof(currentEntityDirection),1,dataDictionary);
+    if(currentEntityDirection == -1)
+    {
+        return;
+    }
+    else
+    {
+        long blocksize;
+        fseek(dataDictionary,currentEntityDirection, SEEK_SET);
+    //    fread(&curre);
+    }
+}
+
+void  printDataRecords(FILE *dataDictionary, long attributesPointer,long currentRecordPointer, int blockSize)
+{
+    long currentRecordDirection;
+    fseek(dataDictionary,currentRecordPointer, SEEK_SET);
+    fread(&currentRecordDirection, sizeof(currentRecordDirection),1,dataDictionary);
+
+    if(currentRecordDirection ==-1)
+    {
+        return;
+    }
+    else
+    {
+        long nextRecordPointer =currentRecordDirection+blockSize;
+        int defaultOffset=0;
+        printf("\t\t");
+        printRecordData(dataDictionary,attributesPointer, currentRecordDirection, defaultOffset);
+        printf("\n");
+        printRecordData(dataDictionary,attributesPointer, nextRecordPointer, blockSize);
+    }
+}
+/*
+ void printRecordData(FILE *dataDictionary, long currentAttributePointer, long currentRecordDirection, blockSize)
+{
+    long currentRecordDirection;
+    fseek(dataDictionary,currentRecordPointer, SEEK_SET);
+    fread(&currentRecordDirection, sizeof(currentRecordDirection),1,dataDictionary);
+
+    if(currentRecordDirection ==-1)
+    {
+        return;
+    }
+    else
+    {
+        char  currentAttributename[NAME_LENGHT];
+        long nextAttributePointer;
+
+        int atr
+        long nextRecordPointer =currentRecordDirection+blockSize;
+        int defaultOffset=0;
+        printf("\t\t");
+        printRecordData(dataDictionary,attributesPointer, currentRecordDirection, defaultOffset);
+        printf("\n");
+        printRecordData(dataDictionary,attributesPointer, nextRecordPointer, blockSize);
+    }
+}*/

@@ -2,7 +2,7 @@
 #define DICTIONARY_H
 #define EMPTY_POINTER -1
 #define DATA_BLOCK_SIZE 50
-#define MAIN_ENTITY_POINTER
+#define MAIN_ENTITY_POINTER -1
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,20 +20,21 @@ typedef struct Node
 typedef struct attribute
 {
   char name[DATA_BLOCK_SIZE];
-  bool isPrimary;current
+  bool isPrimary;
   int type;
   long size;
   long nextAtribute;
 }ATTRIBUTE;
 
 
+
 FILE *initializeDataDictionary(const char *dictonaryName);
 int appendEntity(FILE *dataDictionary, ENTITY NuevaEntidad);
 
-void removeEntity(FILE *dataDictionary, long currentEntityPointer, const char *newEntityName);
+ENTITY removeEntity(FILE *dataDictionary, long currentEntityPointer, const char *EntityName);
 void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char *newEntityName, long newEntity);
 
-void reorderAtributees(FILE *dataDictionary, long currentEntityPointer, const char *neweEntityName, long newEntity);
-
-
+int appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute);
+void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection);
 #endif
+
