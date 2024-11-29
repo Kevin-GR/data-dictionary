@@ -3,7 +3,7 @@
 FILE *initializeDataDictionary(const char *dictionaryName) {
     long mainHeader = EMPTY_POINTER;
     printf("Initializing Data Dictionary...\n");
-    FILE *dictionary = fopen (dictionaryName, "W+");
+    FILE *dictionary = fopen (dictionaryName, "w+");
     fwrite (&mainHeader, sizeof(mainHeader),1, dictionary);
     return dictionary;
 }
@@ -25,7 +25,7 @@ void createEntity(FILE *dataDictionary)
 {
     ENTITY newEntity;
 
-    printf("Enter the entity name");
+    printf("Enter the entity name:\n");
     fgets(newEntity.name, sizeof(newEntity.name), stdin);
     newEntity.dataPointer= EMPTY_POINTER;
     newEntity.attributesPointer= EMPTY_POINTER;
@@ -38,7 +38,7 @@ void createEntity(FILE *dataDictionary)
 void createAtribute(FILE *dataDictionary, ENTITY currentEntity)
 {
     ATTRIBUTE newAttribute;
-    printf("Enter the attribute name");
+    printf("Enter the attribute name:\n");
     fgets(newAttribute.name, sizeof(newAttribute.name), stdin);
     newAttribute.isPrimary = false;
     newAttribute.type =1;
@@ -131,6 +131,7 @@ ENTITY removeEntity(FILE *dataDictionary, long currentEntityPointer, const char 
    */
 }
 
+
 void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection)
 {
     long currentAttributeDirection =-1;
@@ -215,9 +216,9 @@ void  printDataRecords(FILE *dataDictionary, long attributesPointer,long current
         long nextRecordPointer =currentRecordDirection+blockSize;
         int defaultOffset=0;
         printf("\t\t");
-        printRecordData(dataDictionary,attributesPointer, currentRecordDirection, defaultOffset);
+        //printRecordData(dataDictionary,attributesPointer, currentRecordDirection, defaultOffset);
         printf("\n");
-        printRecordData(dataDictionary,attributesPointer, nextRecordPointer, blockSize);
+     //   printRecordData(dataDictionary,attributesPointer, nextRecordPointer, blockSize);
     }
 }
 /*
@@ -245,3 +246,74 @@ void  printDataRecords(FILE *dataDictionary, long attributesPointer,long current
         printRecordData(dataDictionary,attributesPointer, nextRecordPointer, blockSize);
     }
 }*/
+
+ 
+ void Entities_menu(FILE *dataDictionary)
+ {
+    int option;
+        do
+        {
+             printf("-----Entities menu-----\n");
+       
+             printf("1.- New Entity\n 2.- Delete entity\n 3.- Print entities \n 4.- Menu attributes  5.- finish");
+             scanf("%d", &option);
+
+            switch (option)
+            {
+            case 1:
+                createEntity(dataDictionary);
+                break;
+            case 2:
+                createEntity(dataDictionary);
+                break;
+            case 3:
+                createEntity(dataDictionary);
+                break;
+            case 4:
+                createEntity(dataDictionary);
+                break;
+            case 5:
+                createEntity(dataDictionary);
+                break;
+            
+            default:
+                break;
+            }
+
+        }while (option != 5);
+ }
+
+ void Attributes_menu(FILE *dataDictionary)
+ {
+    int option;
+        do
+        {
+             printf("-----Entities menu-----\n");
+       
+             printf("1.- New Entity\n 2.- Delete entity\n 3.- Print entities \n 4.- Menu attributes  5.- finish");
+             scanf("%d", &option);
+
+            switch (option)
+            {
+            case 1:
+                createEntity(dataDictionary);
+                break;
+            case 2:
+                createEntity(dataDictionary);
+                break;
+            case 3:
+                createEntity(dataDictionary);
+                break;
+            case 4:
+                createEntity(dataDictionary);
+                break;
+            case 5:
+                createEntity(dataDictionary);
+                break;
+            
+            default:
+                break;
+            }
+
+        }while (option != 5);
+ }

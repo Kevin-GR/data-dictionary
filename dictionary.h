@@ -30,10 +30,8 @@ typedef struct attribute
 
 FILE *initializeDataDictionary(const char *dictonaryName);
 int appendEntity(FILE *dataDictionary, ENTITY NuevaEntidad);
-
 ENTITY removeEntity(FILE *dataDictionary, long currentEntityPointer, const char *EntityName);
 void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char *newEntityName, long newEntity);
-
 int appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute);
 void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection);
 #endif
