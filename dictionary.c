@@ -24,7 +24,7 @@ int appendEntity(FILE *dataDictionary, ENTITY newEntity)
 void createEntity(FILE *dataDictionary)
 {
     ENTITY newEntity;
-
+    getchar();
     printf("Enter the entity name:\n");
     fgets(newEntity.name, sizeof(newEntity.name), stdin);
     newEntity.dataPointer= EMPTY_POINTER;
@@ -119,44 +119,83 @@ void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char
 
 ENTITY removeEntity(FILE *dataDictionary, long currentEntityPointer, const char *EntityName)
 {
-    /*long currentEntityDirection =-1;
-    
+    ENTITY currentEntity;
+    long nextEntityDirection;
+    long previousEntityPointer =EMPTY_POINTER;
+    char currentEntityName[DATA_BLOCK_SIZE];
+
     fseek(dataDictionary,currentEntityPointer,SEEK_SET);
-    fread(&currentEntityPointer, sizeof(currentEntityDirection),1,dataDictionary);
+    fread(&currentEntityPointer, sizeof(ENTITY),1,dataDictionary);
 
     if(currentEntityPointer == -1)
     {
-        return 0;
+        return;
     }
     else
     {
-        char currentEntityName[DATA_BLOCK_SIZE];
-        long nextEntityDirection;
-        long nextHeaderPointer;
-
-        fseek(dataDictionary, currentEntityPointer,SEEK_SET);
-        fread(resultEntity.name,sizeof(char),DATA_BLOCK_SIZE,dataDictionary);
-        nextHeaderPointer = ftell(dataDictionary)+ (sizeof(long)*2);
-        if(strcmp(resultEntity.name,EntityName)==0)
+    
+        while(currentEntityPointer != -1)
         {
-            fread(&resultEntity.dataPointer, sizeof(long),1,dataDictionary);
-            fread(&resultEntity.attributesPointer, sizeof(long),1,dataDictionary);
-            fread(&resultEntity.nextEntity, sizeof(long),1,dataDictionary);
+            if(strcmp(currentEntity.name,EntityName)==0)
+            {
+                fseek(dataDictionary,previousEntityPointer+sizeof(currentEntity.name)+sizeof(long)* 2, SEEK_SET);
+                fwrite(&currentEntity.nextEntity,sizeof(long),1,dataDictionary);
+            }
+            else
+            {
+                fseek(dataDictionary,currentEntityPointer-sizeof(long),1,SEEK_SET);
+                fwrite(&currentEntity.nextEntity,sizeof(long),1,dataDictionary);
+            }
 
             fseek(dataDictionary,currentEntityPointer,SEEK_SET);
-            fwrite(&resultEntity.nextEntity,sizeof(long),1, dataDictionary);
+            long nullPointer=EMPTY_POINTER;
+            fwrite(&nullPointer,sizeof(long),1,dataDictionary);
+            return;
         }
-        else
-        {
-            fseek(dataDictionary,currentEntityPointer,SEEK_SET);
-            fwrite(&newEntityDirection, sizeof(long),1,dataDictionary);
-            fseek(dataDictionary,newEntityDirection+DATA_BLOCK_SIZE+(sizeof(long)*2),SEEK_SET);
-            fwrite(&currentEntityDirection, sizeof(long),DATA_BLOCK_SIZE,dataDictionary);
-            
-        }
-        
+        previousEntityPointer=currentEntityPointer;
+        currentEntityPointer =currentEntity.nextEntity;
+
+        fseek(dataDictionary,currentEntityPointer,SEEK_SET);
+        fread(&currentEntity,sizeof(ENTITY),1,dataDictionary);
     }
-   */
+}
+
+void removeAttribute(FILE *dataDictionary, long currentEntityPointer, const char *AttributeName)
+{
+    ENTITY currentEntity;
+    long nextEntityPointer;
+    long currentAtributePointer;
+
+    fseek(dataDictionary,currentEntityPointer,SEEK_SET);
+    fread(&currentEntity,sizeof(ENTITY),1,dataDictionary);
+
+    currentAtributePointer=currentEntity.attributesPointer;
+    if(currentAtributePointer ==-1)
+    {
+        return;
+    }
+    else
+    {
+        while(currentAtributePointer != -1)
+        {
+            fseek(dataDictionary,currentAtributePointer,SEEK_SET);
+            char Name[DATA_BLOCK_SIZE];
+            fread(AttributeName,sizeof(char),DATA_BLOCK_SIZE,dataDictionary);
+
+            if(strcmp(AttributeName, Name) ==0);
+            {
+                long nextAtribute;
+                fread(&nextAtribute,sizeof(long),1,dataDictionary);
+
+                fseek(dataDictionary, currentEntityPointer + sizeof(currentEntity.name)+sizeof(long)*2,SEEK_SET);
+                fwrite(&nextAtribute,sizeof(long),1,dataDictionary);
+                return;
+            }
+            fread(&currentAtributePointer,sizeof(long),1,dataDictionary);
+
+        }
+    }
+
 }
 
 
@@ -250,7 +289,7 @@ void  printDataRecords(FILE *dataDictionary, long attributesPointer,long current
     }
 }
 /*
- void printRecordData(FILE *dataDictionary, long currentAttributePointer, long currentRecordDirection, blockSize)
+ void printRecordData(FILE *dataDictionary, long currentAttributePointer, long currentRecordDirection, )
 {
     long currentRecordDirection;
     fseek(dataDictionary,currentRecordPointer, SEEK_SET);
@@ -292,7 +331,7 @@ void  printDataRecords(FILE *dataDictionary, long attributesPointer,long current
                 createEntity(dataDictionary);
                 break;
             case 2:
-                removeEntity(dataDictionary,);
+            //    removeEntity(dataDictionary);
                 break;
             case 3:
                 createEntity(dataDictionary);
