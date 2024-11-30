@@ -35,5 +35,11 @@ void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char
 int appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute);
 void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection);
 void openDataDictionary();
+void entitiesMenu(FILE *dataDictionary);
+ENTITY findEntity(FILE *dataDictionary,const char *name);
+void Attributes_menu(FILE *dataDictionary, ENTITY currentEntity);
+void main_menu();
+
+
 #endif
 
