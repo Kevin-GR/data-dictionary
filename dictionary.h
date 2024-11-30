@@ -20,7 +20,7 @@ typedef struct Node
 typedef struct attribute
 {
   char name[DATA_BLOCK_SIZE];
-  bool isPrimary;
+  int isPrimary;
   int type;
   long size;
   long nextAtribute;

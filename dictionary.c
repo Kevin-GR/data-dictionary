@@ -68,9 +68,7 @@ void createAtribute(FILE *dataDictionary, ENTITY currentEntity)
             newAttribute.size  = sizeof(bool);
             break;
     }
-    newAttribute.isPrimary = false;
-    newAttribute.type =1;
-    newAttribute.size = sizeof(int);
+    
 
     newAttribute.nextAtribute =EMPTY_POINTER;
 
@@ -143,7 +141,7 @@ ENTITY removeEntity(FILE *dataDictionary, long currentEntityPointer, const char 
             }
             else
             {
-                fseek(dataDictionary,currentEntityPointer-sizeof(long),1,SEEK_SET);
+                fseek(dataDictionary, currentEntityPointer-sizeof(long),SEEK_SET);
                 fwrite(&currentEntity.nextEntity,sizeof(long),1,dataDictionary);
             }
 
@@ -318,6 +316,7 @@ void  printDataRecords(FILE *dataDictionary, long attributesPointer,long current
  void Entities_menu(FILE *dataDictionary)
  {
     int option;
+    char name[DATA_BLOCK_SIZE];
         do
         {
              printf("-----Entities menu-----\n");
@@ -331,7 +330,9 @@ void  printDataRecords(FILE *dataDictionary, long attributesPointer,long current
                 createEntity(dataDictionary);
                 break;
             case 2:
-            //    removeEntity(dataDictionary);
+                printf("name of entity:\n");
+                scanf("%s", name);
+                removeEntity(dataDictionary,);
                 break;
             case 3:
                 createEntity(dataDictionary);
