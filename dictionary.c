@@ -203,9 +203,9 @@ void createAttribute(FILE *dataDictionary, ENTITY currentEntity)
 {
     ATTRIBUTE newAttribute;
     int length;
-    printf("Enter the attribute name:\n");
+    getchar();
+    printf("Enter the entity name:\n");
     fgets(newAttribute.name, sizeof(newAttribute.name), stdin);
-    newAttribute.name[strcspn(newAttribute.name, "\n")] = '\0';
     printf("Is primary key? 1:Yes, 0:No");
     scanf("%d" , &newAttribute.isPrimary);
     printf("Atribute type?:\n 1- Int\n 2- Float\n 3- Char\n 4.- Long\n 5-Bool\n");
