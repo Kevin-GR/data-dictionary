@@ -20,9 +20,9 @@ typedef struct Node
 typedef struct attribute
 {
   char name[DATA_BLOCK_SIZE];
-  int isPrimary;
-  int type;
-  int size;
+  bool isPrimary;
+  long type;
+  long size;
   long nextAtribute;
 }ATTRIBUTE;
 
@@ -32,14 +32,14 @@ FILE *initializeDataDictionary(const char *dictonaryName);
 int appendEntity(FILE *dataDictionary, ENTITY NuevaEntidad);
 ENTITY removeEntity(FILE *dataDictionary,long currentEntityPointer, const char *entityName);
 void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char *newEntityName, long newEntity);
-int appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute);
+long appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute);
 void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection);
 void openDataDictionary();
 void entitiesMenu(FILE *dataDictionary);
 ENTITY findEntity(FILE *dataDictionary,const char *name);
 void Attributes_menu(FILE *dataDictionary, ENTITY currentEntity);
 void main_menu();
-
-
+void createAttribute(FILE *dataDictionary, ENTITY currentEntity);
+void printEntities(FILE *dataDictionary);
 #endif
 
