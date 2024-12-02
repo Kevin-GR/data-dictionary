@@ -40,6 +40,6 @@ void main_menu();
 void createAttribute(FILE *dataDictionary, ENTITY currentEntity);
 void printEntities(FILE *dataDictionary);
 void removeEntity(FILE *dataDictionary, const char *entityName);
-ENTITY findEntity(FILE *dataDictionary);
+int findEntity(FILE *dataDictionary, const char *name);
 #endif
 
