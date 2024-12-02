@@ -30,16 +30,16 @@ typedef struct attribute
 
 FILE *initializeDataDictionary(const char *dictonaryName);
 int appendEntity(FILE *dataDictionary, ENTITY NuevaEntidad);
-ENTITY removeEntity(FILE *dataDictionary,long currentEntityPointer, const char *entityName);
 void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char *newEntityName, long newEntity);
 long appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute);
 void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection);
 void openDataDictionary();
 void entitiesMenu(FILE *dataDictionary);
-ENTITY findEntity(FILE *dataDictionary,const char *name);
 void Attributes_menu(FILE *dataDictionary, ENTITY currentEntity);
 void main_menu();
 void createAttribute(FILE *dataDictionary, ENTITY currentEntity);
 void printEntities(FILE *dataDictionary);
+void removeEntity(FILE *dataDictionary, const char *entityName);
+ENTITY findEntity(FILE *dataDictionary);
 #endif
 

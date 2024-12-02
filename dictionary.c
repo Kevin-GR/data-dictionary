@@ -26,11 +26,10 @@ int appendEntity(FILE *dataDictionary, ENTITY newEntity)
 {
     fseek(dataDictionary, 0, SEEK_END);
     long entityDirection = ftell(dataDictionary); 
-    fwrite(newEntity.name, sizeof(ENTITY), 1, dataDictionary);
-    fwrite(&newEntity.dataPointer, sizeof(ENTITY), 1, dataDictionary);
-    fwrite(&newEntity.attributesPointer, sizeof(ENTITY), 1, dataDictionary);
-    fwrite(&newEntity.nextEntity, sizeof(ENTITY), 1, dataDictionary);
-
+    fwrite(newEntity.name, DATA_BLOCK_SIZE, 1, dataDictionary);
+    fwrite(&newEntity.dataPointer, sizeof(long), 1, dataDictionary);
+    fwrite(&newEntity.attributesPointer, sizeof(long), 1, dataDictionary);
+    fwrite(&newEntity.nextEntity, sizeof(long), 1, dataDictionary);
     return entityDirection;
 }
 
@@ -48,7 +47,6 @@ void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char
     else
     {
         char currentEntityName[DATA_BLOCK_SIZE];
-        long nextEntityDirection;
         long nextHeaderPointer;
 
         fseek(dataDictionary, currentEntityDirection, SEEK_SET);  
@@ -66,46 +64,44 @@ void reorderEntities(FILE *dataDictionary, long currentEntityPointer, const char
         }
         else
         {
-
             reorderEntities(dataDictionary, nextHeaderPointer, newEntityName, newEntityDirection);
         }
     }
 }
 
 
-ENTITY removeEntity(FILE *dataDictionary,long currentEntityPointer, const char *entityName) {
 
- /*  long currentEntityDirection = -1;
-    fseek(dataDictionary, currentEntityPointer, SEEK_SET);
-    fread(&currentEntityDirection, sizeof(currentEntityDirection), 1, dataDictionary);
+void removeEntity(FILE *dataDictionary, const char *entityName) {
+  /*  long currentEntityDirection = -1;
+    long previousEntityDirection = -1;
+    ENTITY resultEntity;
 
-    if(currentEntityDirection == -1)
-    return;
+    fseek(dataDictionary, 0, SEEK_SET);
+    fread(&resultEntity, sizeof(ENTITY), 1, dataDictionary);
 
-    else
-    {
-        ENTITY resultEntity;
-        long nextEntityDirection;
-        long nextHeaderPointer;
-   
+    while (currentEntityDirection != -1) {
+
         fseek(dataDictionary, currentEntityDirection, SEEK_SET);
-        fread(&resultEntity.name, sizeof(char),DATA_BLOCK_SIZE, dataDictionary);
-        nextHeaderPointer = ftell(dataDictionary)+ (sizeof(long)*2);
-        if(strcmp(resultEntity.name,entityName)==0)
-        {
-            fread(&resultEntity.dataPointer, sizeof(long),1,dataDictionary);
-            fread(&resultEntity.attributesPointer, sizeof(long),1,dataDictionary);
-            fread(&resultEntity.nextEntity, sizeof(long),1,dataDictionary);
+        fread(&resultEntity.name, sizeof(char), DATA_BLOCK_SIZE, dataDictionary);
+        fread(&resultEntity.dataPointer, sizeof(long), 1, dataDictionary);
+        fread(&resultEntity.attributesPointer, sizeof(long), 1, dataDictionary);
+        fread(&resultEntity.nextEntity, sizeof(long), 1, dataDictionary);
 
-            fseek(dataDictionary,currentEntityPointer, SEEK_SET);
-            fwrite(&resultEntity.nextEntity, sizeof(long),1,dataDictionary);
+        if (strcmp(resultEntity.name, entityName) == 0) {
+            if (previousEntityDirection == -1) {
+                fseek(dataDictionary, 0, SEEK_SET);
+                fwrite(&resultEntity.nextEntity, sizeof(long), 1, dataDictionary);
+            } else {
+                fseek(dataDictionary, previousEntityDirection, SEEK_SET);
+                fwrite(&resultEntity.nextEntity, sizeof(long), 1, dataDictionary);
+            }
 
-            return resultEntity;
+            printf("Entity '%s' removed.\n", entityName);
+            return;
         }
-        else
-        {
-             return removeEntity(dataDictionary,nextHeaderPointer,entityName);   
-        }
+
+        previousEntityDirection = currentEntityDirection;
+        currentEntityDirection = resultEntity.nextEntity;
     }
 
     printf("Entity '%s' not found.\n", entityName);*/
@@ -130,18 +126,18 @@ void entitiesMenu(FILE *dataDictionary)
             case 2:
                 printf("Enter the name of the entity to delete:\n");
                 scanf("%s", name);
-               // removeEntity(dataDictionary, name);
-              
+                removeEntity(dataDictionary, name);
                 break;
             case 3:
                 printEntities(dataDictionary);
                 break;
             case 4:
-                printf("Enter the entity name:\n");
-                scanf("%s", name);
-                currentEntity = findEntity(dataDictionary, name);
+                
+                currentEntity = findEntity(dataDictionary);
+
                 if (currentEntity.name[0] != '\0') {
                     printf("%ld", currentEntity.attributesPointer);
+                    printf("NOmnbre %s", currentEntity.name);
                     Attributes_menu(dataDictionary, currentEntity);
                 } else {
                     printf("Entity not found.\n");
@@ -179,18 +175,44 @@ void printEntities(FILE *dataDictionary) {
     }
 }
 
- ENTITY findEntity(FILE *dataDictionary,const char *name)
- {
-    ENTITY currentEntity;
-    fseek(dataDictionary,0,SEEK_SET);
+ENTITY findEntity(FILE *dataDictionary) {
+    char name[DATA_BLOCK_SIZE];
+    long currentEntityDirection = -1;
+    ENTITY emptyEntity = {0};
 
-    while(fread(&currentEntity,sizeof(ENTITY),1,dataDictionary) == 1)
-    {
-        if(strcmp(currentEntity.name, name) == 0)
-        printf("%ld",currentEntity.dataPointer);
-        return currentEntity;
+    printf("Enter the name of the entity:\n");
+    fgets(name, DATA_BLOCK_SIZE, stdin);
+
+    size_t len = strlen(name);
+    if (len > 0 && name[len - 1] == '\n') {
+        name[len - 1] = '\0';
     }
- }
+
+    fseek(dataDictionary, MAIN_ENTITY_POINTER, SEEK_SET);
+    fread(&currentEntityDirection, sizeof(currentEntityDirection), 1, dataDictionary);
+
+    while (currentEntityDirection != EMPTY_POINTER) {
+        ENTITY currentEntity;
+        fseek(dataDictionary, currentEntityDirection, SEEK_SET);
+        fread(currentEntity.name, DATA_BLOCK_SIZE, 1, dataDictionary);
+        fread(&currentEntity.dataPointer, sizeof(long), 1, dataDictionary);
+        fread(&currentEntity.attributesPointer, sizeof(long), 1, dataDictionary);
+        fread(&currentEntity.nextEntity, sizeof(long), 1, dataDictionary);
+
+        if (strcmp(currentEntity.name, name) == 0) {
+            printf("\nEntity '%s' found.\n", currentEntity.name);
+            return currentEntity;
+        }
+
+        currentEntityDirection = currentEntity.nextEntity;
+    }
+
+    printf("\nEntity '%s' not found.\n", name);
+    return emptyEntity;
+}
+
+
+
 
 
 
@@ -223,7 +245,7 @@ void createAttribute(FILE *dataDictionary, ENTITY currentEntity)
     int length, aux;
     getchar();
     printf("Enter the entity name:\n");
-    fgets(newAttribute.name, sizeof(newAttribute.name), stdin);
+    scanf("%s",newAttribute.name);
     printf("Is primary key? 1:Yes, 0:No");
     scanf("%d", &aux);
     newAttribute.isPrimary= aux;
@@ -275,7 +297,7 @@ void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const 
     fseek(dataDictionary, currentAttributePointer,SEEK_SET);
     fread(&currentAttributeDirection, sizeof(currentAttributeDirection),1,dataDictionary);
 
-    if(currentAttributePointer == -1)
+    if(currentAttributeDirection == -1L)
     {
         fseek(dataDictionary, currentAttributePointer,SEEK_SET);
         fwrite(&newAttributeDirection,sizeof(long),1,dataDictionary);
@@ -298,8 +320,8 @@ void reorderAtributes(FILE *dataDictionary, long currentAttributePointer, const 
 
 				fseek(dataDictionary,currentAttributePointer,SEEK_SET);
 				fwrite(&newAttributeDirection, sizeof(long),1,dataDictionary);
-
-				fseek(dataDictionary,newAttributeDirection + 50 + sizeof(bool) + (sizeof(long) * 2),SEEK_SET);
+				
+				fseek(dataDictionary,newAttributeDirection + DATA_BLOCK_SIZE + sizeof(bool) + (sizeof(long) * 2),SEEK_SET);
 				fwrite(&currentAttributeDirection, sizeof(long),1,dataDictionary);
 			}
     }
@@ -371,7 +393,7 @@ void Attributes_menu(FILE *dataDictionary, ENTITY currentEntity)
     char name[DATA_BLOCK_SIZE];
     do
     {
-        printf("-----Attributes Menu-----\n");
+        printf("-----Attributes of %s----\n", currentEntity.name);
         printf(" 1.- New Attribute\n 2.- Delete Attribute\n 3.- Print Attributes\n 4.- Exit\n");
         scanf("%d", &option);
         switch (option)
@@ -414,7 +436,6 @@ void Attributes_menu(FILE *dataDictionary, ENTITY currentEntity)
             switch (option)
             {
             case 1:
-           
                 openDataDictionary();
                 break;
             case 2:
@@ -435,3 +456,5 @@ void Attributes_menu(FILE *dataDictionary, ENTITY currentEntity)
     FILE *dataDictionary = initializeDataDictionary(name);
     entitiesMenu(dataDictionary);
  }
+
+ 
